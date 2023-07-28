@@ -18,10 +18,9 @@ If -e is in effect, the following sequences are recognized:
 \\r : carriage return 
 \\t : horizontal tab";
 
-
-
-pub fn echo<I>(args: I) 
-where I: Iterator<Item = String>
+pub fn echo<I>(args: I)
+where
+    I: Iterator<Item = String>,
 {
     let mut new_line = true;
     let mut fin_params = false;
@@ -43,30 +42,32 @@ where I: Iterator<Item = String>
             let mut texte: String = arg;
             if interpretation {
                 texte = texte.replace("\\\\", "\\");
-                texte = texte.replace("\\n", "\n"); 
-                texte = texte.replace("\\r", "\r"); 
+                texte = texte.replace("\\n", "\n");
+                texte = texte.replace("\\r", "\r");
                 texte = texte.replace("\\t", "\t");
             }
 
             print!("{}", texte);
-            if new_line {println!()}
+            if new_line {
+                println!()
+            }
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use assert_cmd::Command;
     use super::HELP;
+    use assert_cmd::Command;
 
     fn run(args: &[&str], attendu: &str) {
         let expected = attendu.to_string();
         Command::cargo_bin("echo-rust")
-                    .unwrap()
-                    .args(args)
-                    .assert()
-                    .success()
-                    .stdout(expected);
+            .unwrap()
+            .args(args)
+            .assert()
+            .success()
+            .stdout(expected);
     }
 
     #[test]
@@ -93,19 +94,19 @@ mod tests {
     fn interpreation_backslash() {
         run(&["-e", "-n", "\\\\"], "\\");
     }
-    
+
     #[test]
     fn interpreation_n() {
         run(&["-e", "-n", "\\n"], "\n");
     }
-    
+
     #[test]
     fn interpreation_r() {
         run(&["-e", "-n", "\\r"], "\r");
     }
-    
+
     #[test]
     fn interpreation_t() {
         run(&["-e", "-n", "\\t"], "\t");
-    }    
+    }
 }
